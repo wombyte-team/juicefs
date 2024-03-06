@@ -13,22 +13,22 @@ from strategy import *
 from fs_op import FsOperation
 import random
 
-st_entry_name = st.text(alphabet='abc', min_size=1, max_size=3)
+st_entry_name = st.text(alphabet='abc.?*', min_size=1, max_size=3)
 st_patterns = st.text(alphabet='abc?/*', min_size=1, max_size=5).\
     filter(lambda s: s.find('***') == -1 or s.endswith('/***'))
 st_patterns = st.lists(st.sampled_from(['a','?','/','*', '/***']), min_size=1, max_size=10)\
     .map(''.join).filter(lambda s: s.find('***') == -1 or (s.count('/***')==1 and s.endswith('a/***')))
 st_patterns = st.lists(st.sampled_from(['a','?','/','*']), min_size=1, max_size=10)\
     .map(''.join).filter(lambda s: s.find('***') == -1 )
-st_patterns = st.lists(st.sampled_from(['a','?','/','*']), min_size=1, max_size=10)\
+st_patterns = st.lists(st.sampled_from(['a','?','/','*','.','\\']), min_size=1, max_size=10)\
     .map(''.join).filter(lambda s: s.find('**') == -1 )
 
 st_option = st.fixed_dictionaries({
     "option": st.just("--include") | st.just("--exclude"),
     "pattern": st_patterns
 })
-st_options = st.lists(st_option, min_size=1, max_size=10).\
-    filter(lambda self: any(item["pattern"].endswith('/***') for item in self))
+# st_options = st.lists(st_option, min_size=1, max_size=10).\
+#     filter(lambda self: any(item["pattern"].endswith('/***') for item in self))
 st_options = st.lists(st_option, min_size=1, max_size=10)
 
 SEED=int(os.environ.get('SEED', random.randint(0, 1000000000)))
@@ -109,11 +109,12 @@ class SyncMachine(RuleBasedStateMachine):
     def sync(self, options):
         subprocess.check_call(['rm', '-rf', self.DEST_RSYNC])
         subprocess.check_call(['rm', '-rf', self.DEST_JUICESYNC])
-        options = ' '.join([f'{item["option"]} {item["pattern"]}' for item in options])
-        self.logger.info(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options}')
-        subprocess.check_call(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        self.logger.info(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options}')
-        subprocess.check_call(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        options_str = ' '.join([f'{item["option"]} {item["pattern"]}' for item in options])
+        options_display = ' '.join([f'{item["option"]} "{item["pattern"]}"' for item in options])
+        self.logger.info(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options_display}')
+        subprocess.check_call(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options_str}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        self.logger.info(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options_display}')
+        subprocess.check_call(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options_str}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
             subprocess.check_call(['diff', '-r', self.DEST_RSYNC, self.DEST_JUICESYNC])
         except subprocess.CalledProcessError as e:
