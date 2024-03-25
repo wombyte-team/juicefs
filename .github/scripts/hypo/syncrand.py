@@ -97,27 +97,29 @@ class SyncMachine(RuleBasedStateMachine):
         else:
             return os.path.join(parent, subdir)
 
-    @rule(options = st_options
-        )
-    def rsync(self, options):
-        subprocess.check_call(['rm', '-rf', self.DEST_RSYNC])
-        subprocess.check_call(['rm', '-rf', self.DEST_JUICESYNC])
-        options_run = ' '.join([f'{item["option"]} {item["pattern"]}' for item in options])
-        options_display = ' '.join([f'{item["option"]} "{item["pattern"]}"' for item in options])
-        self.logger.info(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options_display}')
-        subprocess.check_call(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options_run}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        self.logger.info(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options_display}')
-        subprocess.check_call(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options_run}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        try:
-            subprocess.check_call(['diff', '-r', self.DEST_RSYNC, self.DEST_JUICESYNC])
-        except subprocess.CalledProcessError as e:
-            print(f'\033[31m{e}\033[0m')
-            raise e
-        self.fsop.stats.success('do_sync')
+    # @rule(options = st_options
+    #     )
+    # def sync(self, options):
+    #     subprocess.check_call(['rm', '-rf', self.DEST_RSYNC])
+    #     subprocess.check_call(['rm', '-rf', self.DEST_JUICESYNC])
+    #     options_run = ' '.join([f'{item["option"]} {item["pattern"]}' for item in options])
+    #     options_display = ' '.join([f'{item["option"]} "{item["pattern"]}"' for item in options])
+    #     self.logger.info(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options_display}')
+    #     subprocess.check_call(f'rsync -r -vvv {self.ROOT_DIR1}/ {self.DEST_RSYNC}/ {options_run}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    #     self.logger.info(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options_display}')
+    #     subprocess.check_call(f'./juicefs sync --dirs -v {self.ROOT_DIR1}/ {self.DEST_JUICESYNC}/ {options_run}'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    #     try:
+    #         subprocess.check_call(['diff', '-r', self.DEST_RSYNC, self.DEST_JUICESYNC])
+    #     except subprocess.CalledProcessError as e:
+    #         print(f'\033[31m{e}\033[0m')
+    #         raise e
+    #     self.fsop.stats.success('do_sync')
 
     @rule(options = st_options
         )
-    def rclone(self, options):
+    def sync(self, options):
+        if len(os.listdir(self.ROOT_DIR1)) == 0:
+            return
         subprocess.check_call(['rm', '-rf', self.DEST_RSYNC])
         subprocess.check_call(['rm', '-rf', self.DEST_JUICESYNC])
         options_run = ' '.join([f'{item["option"]} {item["pattern"]}' for item in options])
