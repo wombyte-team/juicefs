@@ -6,6 +6,9 @@ source .github/scripts/start_meta_engine.sh
 start_meta_engine $META
 META_URL=$(get_meta_url $META)
 
+# go tool covdata percent -i=cover2 -o c.out
+# go tool cover -html=c.out -o coverage.html
+
 prepare_test()
 {
     umount_jfs /tmp/jfs $META_URL
