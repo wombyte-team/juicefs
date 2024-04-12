@@ -60,7 +60,7 @@
       },
       "d1": {
         "attr": {"inode":3,"type":"directory","mode":493,"uid":501,"gid":20,"atime":1623746591,"mtime":1623746610,"ctime":1623746610,"atimensec":959224111,"mtimensec":959224111,"ctimensec":959224111,"nlink":2,"length":0},
-        "xattrs": [{"name":"dk","value":"果汁"}],
+        "xattrs": [{"name":"dk","value":"果汁%2525"}],
         "entries": {
           "big": {
             "attr": {"inode":6,"type":"regular","mode":420,"uid":501,"gid":0,"atime":1637150857,"mtime":1637150858,"ctime":1637150878,"atimensec":961503222,"mtimensec":961503222,"ctimensec":961503222,"nlink":1,"length":104857600},
@@ -96,10 +96,10 @@
     }
   },
   "Trash": {
-    "attr": {"inode":9223372032828243968,"type":"directory","mode":365,"uid":0,"gid":0,"atime":1623745101,"mtime":1638437877,"ctime":1638437877,"nlink":3,"length":0},
+    "attr": {"inode":9223372032828243968,"type":"directory","mode":365,"uid":0,"gid":0,"atime":1623745101,"mtime":1638437877,"ctime":1638437877,"nlink":2,"length":0},
     "entries": {
       "2021-12-02-09": {
-        "attr": {"inode":9223372032828243969,"type":"directory","mode":365,"uid":0,"gid":0,"atime":1638437877,"mtime":1638437877,"ctime":1638437877,"atimensec":598277000,"mtimensec":598277000,"ctimensec":598277000,"nlink":3,"length":0},
+        "attr": {"inode":9223372032828243969,"type":"directory","mode":365,"uid":0,"gid":0,"atime":1638437877,"mtime":1638437877,"ctime":1638437877,"atimensec":598277000,"mtimensec":598277000,"ctimensec":598277000,"nlink":2,"length":0},
         "entries": {
           "1-27-tf1": {
             "attr": {"inode":27,"type":"regular","mode":420,"uid":501,"gid":0,"atime":1638437852,"mtime":1638437852,"ctime":1638437877,"atimensec":28186000,"mtimensec":28186000,"ctimensec":28186000,"nlink":1,"length":11},

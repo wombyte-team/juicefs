@@ -247,7 +247,12 @@ func createStorage(format meta.Format) (object.ObjectStorage, error) {
 	blob = object.WithPrefix(blob, format.Name+"/")
 	if format.StorageClass != "" {
 		if os, ok := blob.(object.SupportStorageClass); ok {
-			os.SetStorageClass(format.StorageClass)
+			err := os.SetStorageClass(format.StorageClass)
+			if err != nil {
+				logger.Warnf("set storage class %q: %v", format.StorageClass, err)
+			}
+		} else {
+			logger.Warnf("Storage class is not supported by %q, will ignore", format.Storage)
 		}
 	}
 	if format.EncryptKey != "" {
@@ -316,8 +321,8 @@ func doTesting(store object.ObjectStorage, key string, data []byte) error {
 	}
 	err = store.Delete(key)
 	if err != nil {
-		// it's OK to don't have delete permission
-		fmt.Printf("Failed to delete: %s", err)
+		// it's OK to don't have delete permission, but we should warn user explicitly
+		logger.Warnf("Failed to delete, err: %s", err)
 	}
 	return nil
 }

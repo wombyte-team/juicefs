@@ -507,7 +507,7 @@ func decodeEntry(dec *json.Decoder, parent Ino, cs *DumpedCounters, parents map[
 					if err != nil {
 						break
 					}
-					if typeFromString(child.Attr.Type) == TypeDirectory {
+					if e.Attr.Inode < TrashInode && typeFromString(child.Attr.Type) == TypeDirectory {
 						e.Attr.Nlink++
 					}
 					e.Entries[n.(string)] = &DumpedEntry{
@@ -590,6 +590,9 @@ func dumpACLEntries(entries aclAPI.Entries) []DumpedACLEntry {
 }
 
 func loadACL(dumped *DumpedACL) *aclAPI.Rule {
+	if dumped == nil {
+		return nil
+	}
 	return &aclAPI.Rule{
 		Owner:       dumped.Owner,
 		Group:       dumped.Group,
