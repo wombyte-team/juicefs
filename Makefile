@@ -21,7 +21,7 @@ endif
 
 juicefs: Makefile cmd/*.go pkg/*/*.go go.*
 	go version
-	go build -ldflags="$(LDFLAGS)"  -o juicefs .
+	go build -ldflags="$(LDFLAGS)" -tags bunny -o juicefs .
 
 juicefs.cover: Makefile cmd/*.go pkg/*/*.go go.*
 	go version
